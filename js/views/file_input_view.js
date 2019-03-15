@@ -267,13 +267,13 @@
       this.render();
     },
 
-    async maybeAddAttachment(file) {
-      if (!file) {
+    async maybeAddAttachment(originalFile) {
+      if (!originalFile) {
         return;
       }
 
-      const fileName = file.name;
-      const contentType = file.type;
+      const fileName = originalFile.name;
+      const contentType = originalFile.type;
 
       if (window.Signal.Util.isFileDangerous(fileName)) {
         this.showDangerousError();
@@ -300,6 +300,16 @@
         this.showCannotMixError();
         return;
       }
+
+      // Save temporary copy of file to disk.
+      const arrayBuffer = await new Promise((resolve) => {
+        const fileReader = new FileReader();
+        fileReader.onload = () => resolve(fileReader.result);
+        fileReader.readAsArrayBuffer(originalFile);
+      });
+      const ext = originalFile.type.split('/')[1];
+      const payload = await Signal.Migrations.writeTempAttachmentData(arrayBuffer, ext);
+      const file = new File([payload.arrayBuffer], payload.filename, {type: originalFile.type});
 
       const renderVideoPreview = async () => {
         const objectUrl = URL.createObjectURL(file);
