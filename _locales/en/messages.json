@@ -171,6 +171,10 @@
     "description":
       "Message shown on the loading screen before we've loaded any messages"
   },
+  "loadingConversation": {
+    "message": "Loading Conversation...",
+    "description": "Shown during the process of loading a conversation."
+  },
   "optimizingApplication": {
     "message": "Optimizing application...",
     "description":
@@ -1018,6 +1022,10 @@
   "deleteMessages": {
     "message": "Delete messages",
     "description": "Menu item for deleting messages, title case."
+  },
+  "deletingMessages": {
+    "message": "Deleting Messages...",
+    "description": "Shown during the process of deleting messages."
   },
   "deleteConversationConfirmation": {
     "message": "Permanently delete this conversation?",
