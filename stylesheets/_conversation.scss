@@ -392,6 +392,12 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+
+    .message {
+      text-align: center;
+      -webkit-user-select: text;
+      max-width: 35em;
+    }
   }
 
   .container {

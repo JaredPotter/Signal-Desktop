@@ -64,11 +64,6 @@
     },
   });
 
-  Whisper.ConversationLoadingScreen = Whisper.View.extend({
-    templateName: 'conversation-loading-screen',
-    className: 'conversation-loading-screen',
-  });
-
   Whisper.ConversationView = Whisper.View.extend({
     className() {
       return ['conversation', this.model.get('type')].join(' ');
@@ -150,9 +145,7 @@
 
       this.render();
 
-      this.loadingScreen = new Whisper.ConversationLoadingScreen();
-      this.loadingScreen.render();
-      this.loadingScreen.$el.prependTo(this.$('.discussion-container'));
+      this.renderConversationLoadingScreen(true, i18n('loadingConversation'));
 
       this.window = options.window;
       this.fileInput = new Whisper.FileInputView({
@@ -494,6 +487,31 @@
       }
     },
 
+    renderConversationLoadingScreen(show, message) {
+      if (this.loadingScreen && !show) {
+        const view = this.loadingScreen;
+        this.loadingScreen = null;
+        view.remove();
+        return;
+      }
+
+      if (this.loadingScreen) {
+        const props = {
+          conversationLoadingScreenMessage: message,
+        };
+
+        this.loadingScreen.update(props);
+        return;
+      }
+
+      this.loadingScreen = new Whisper.ReactWrapperView({
+        className: 'conversation-loading-screen',
+        Component: window.Signal.Components.ConversationLoadingScreen,
+        props: { message },
+      });
+      this.$('.discussion-container').prepend(this.loadingScreen.el);
+    },
+
     renderTypingBubble() {
       const timers = this.model.contactTypingTimers || {};
       const records = _.values(timers);
@@ -617,8 +635,7 @@
           openDelta,
           'milliseconds to load'
         );
-        this.loadingScreen = null;
-        view.remove();
+        this.renderConversationLoadingScreen(false);
       }
     },
 
@@ -1229,6 +1246,7 @@
         message: i18n('deleteWarning'),
         okText: i18n('delete'),
         resolve: () => {
+          this.renderConversationLoadingScreen(true, i18n('deletingMessages'));
           window.Signal.Data.removeMessage(message.id, {
             Message: Whisper.Message,
           });
@@ -1236,6 +1254,7 @@
           this.model.messageCollection.remove(message.id);
           this.resetPanel();
           this.updateHeader();
+          this.renderConversationLoadingScreen(false);
         },
       });
 

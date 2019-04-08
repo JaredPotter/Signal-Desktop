@@ -31,6 +31,9 @@ const {
   ConversationHeader,
 } = require('../../ts/components/conversation/ConversationHeader');
 const {
+  ConversationLoadingScreen,
+} = require('../../ts/components/conversation/ConversationLoadingScreen');
+const {
   EmbeddedContact,
 } = require('../../ts/components/conversation/EmbeddedContact');
 const { Emojify } = require('../../ts/components/conversation/Emojify');
@@ -213,6 +216,7 @@ exports.setup = (options = {}) => {
     ContactListItem,
     ContactName,
     ConversationHeader,
+    ConversationLoadingScreen,
     EmbeddedContact,
     Emojify,
     GroupNotification,
