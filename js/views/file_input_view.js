@@ -118,7 +118,9 @@
 
     async onCloseAttachment(attachment) {
       this.attachments = _.without(this.attachments, attachment);
-      await window.Signal.Migrations.deleteTempAttachmentData(attachment.file.name);
+      await window.Signal.Migrations.deleteTempAttachmentData(
+        attachment.file.name
+      );
       this.render();
     },
 
@@ -127,7 +129,6 @@
     },
 
     onClose() {
-      debugger;
       this.attachments = [];
       this.render();
     },
@@ -212,7 +213,9 @@
           URL.revokeObjectURL(attachment.videoUrl);
         }
 
-        await window.Signal.Migrations.deleteTempAttachmentData(attachment.file.name);
+        await window.Signal.Migrations.deleteTempAttachmentData(
+          attachment.file.name
+        );
       });
 
       this.attachments = [];
@@ -272,10 +275,24 @@
     },
 
     async readFileAsArrayBuffer(file) {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         const fileReader = new FileReader();
         fileReader.onload = () => resolve(fileReader.result);
         fileReader.readAsArrayBuffer(file);
+      });
+    },
+
+    async readFileFromPath(path) {
+      return new Promise(resolve => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', path);
+        xhr.responseType = 'blob';
+
+        xhr.addEventListener('load', (response) => {
+            resolve(response);
+        });
+
+        xhr.send();
       });
     },
 
@@ -315,8 +332,38 @@
 
       // Save temporary copy of file to disk.
       const arrayBuffer = await this.readFileAsArrayBuffer(originalFile);
-      const payload = await Signal.Migrations.writeTempAttachmentData(arrayBuffer);
-      const file = new File([payload.arrayBuffer], payload.filename, {type: originalFile.type});
+      // const ext = originalFile.type.split('/')[1];
+      // const payload = await Signal.Migrations.writeTempAttachmentData(
+      //   arrayBuffer
+      // );
+      const file = new File([arrayBuffer], fileName, {
+        type: originalFile.type,
+      });
+
+
+      // const { file } = payload;
+      // arrayBuffer = null;
+      // const file = new File([payload.arrayBuffer], payload.filename, {
+      //   type: originalFile.type,
+      // });
+
+      // let file = await this.readFileFromPath(payload.path);
+      // file.name = payload.filename;
+      // file.lastModifiedDate = new Date();
+
+
+
+      // const file = {
+      //   name: payload.filename + '.' + ext,
+      //   path: payload.path,
+      //   size: originalFile.size,
+      // }
+
+      // const otherFile = new File();
+
+      // const file = originalFile;
+
+      // debugger;
 
       const renderVideoPreview = async () => {
         const objectUrl = URL.createObjectURL(file);

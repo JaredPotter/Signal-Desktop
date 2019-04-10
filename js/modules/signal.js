@@ -137,8 +137,12 @@ function initializeMigrations({
   const getAbsoluteAttachmentPath = createAbsolutePathGetter(attachmentsPath);
   const deleteOnDisk = Attachments.createDeleter(attachmentsPath);
   const writeNewAttachmentData = createWriterForNew(attachmentsPath);
-  const writeTempAttachmentData = createWriterForTempAttachment(attachmentsTempPath);
-  const deleteTempAttachmentData = createDeleterForTempAttachment(attachmentsTempPath);
+  const writeTempAttachmentData = createWriterForTempAttachment(
+    attachmentsTempPath
+  );
+  const deleteTempAttachmentData = createDeleterForTempAttachment(
+    attachmentsTempPath
+  );
 
   return {
     attachmentsPath,

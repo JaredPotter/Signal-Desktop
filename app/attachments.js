@@ -185,11 +185,11 @@ exports.createWriterForTempAttachment = root => {
     throw new TypeError("'root' must be a path");
   }
 
-  return async (arrayBuffer) => {
+  return async arrayBuffer => {
     fse.ensureDirSync(root);
 
-    const buffer = Buffer.from( new Uint8Array(arrayBuffer) );
-    const filename = `${uuidv4()}`;
+    const buffer = Buffer.from(new Uint8Array(arrayBuffer));
+    const filename = uuidv4();
     const tempFilePath = path.join(root, filename);
 
     fse.writeFileSync(tempFilePath, buffer);
@@ -198,11 +198,15 @@ exports.createWriterForTempAttachment = root => {
     const returnArrayBuffer = new ArrayBuffer(newBuffer.length);
     const view = new Uint8Array(returnArrayBuffer);
 
+    // const newBuffer = fse.readFileSync(tempFilePath);
+    // const returnArrayBuffer = new ArrayBuffer(newBuffer.length);
+    // const view = new Uint8Array(returnArrayBuffer);
+
     newBuffer.forEach((value, index) => {
       view[index] = value;
     });
 
-    return { filename, arrayBuffer: returnArrayBuffer };
+    return { filename, arrayBuffer: returnArrayBuffer, path: tempFilePath };
   };
 };
 
@@ -215,11 +219,10 @@ exports.createDeleterForTempAttachment = root => {
   return async filename => {
     fse.ensureDirSync(root);
 
-    if(filename) {
+    if (filename) {
       const tempFilePath = path.join(root, filename);
       fse.removeSync(tempFilePath);
-    }
-    else {
+    } else {
       const dirList = fse.readdirSync(root);
 
       dirList.forEach(name => {
@@ -227,5 +230,5 @@ exports.createDeleterForTempAttachment = root => {
         fse.removeSync(tempFilePath);
       });
     }
-  }
+  };
 };
